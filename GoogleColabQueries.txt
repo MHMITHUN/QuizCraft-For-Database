@@ -6,7 +6,7 @@
 from pymongo import MongoClient
 
 # Example URI — replace with your actual credentials
-uri = "mongodb+srv://sumya:sumya1234@queryshowcluster.9ztpgjy.mongodb.net/?appName=QueryShowCluster"
+uri = "mongodb+srv://sumya:<database secret dibona tomake>@queryshowcluster.9ztpgjy.mongodb.net/?appName=QueryShowCluster"
 client = MongoClient(uri)
 
 # Create / access database

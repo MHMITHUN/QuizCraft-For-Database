@@ -23,7 +23,7 @@ Frontend (React) → Backend API (Express) → MongoDB Atlas
 
 ### Database URI:
 ```
-mongodb+srv://mahamudul:mahamudul1234@quizcraft-ddbms.rytzxvm.mongodb.net/
+mongodb+srv://mahamudul:<database secret dibona tomake>@quizcraft-ddbms.rytzxvm.mongodb.net/
 ```
 
 **Database Name:** `quizcraft` or `test` (automatically detected)
