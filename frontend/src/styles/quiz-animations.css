@@ -1,0 +1,317 @@
+/* QuizCraft - Modern Quiz Animations and Interactions */
+/* These styles provide modern, animated, and interactive quiz experience */
+
+/* Question Card Animations */
+.quiz-question-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform-origin: center;
+}
+
+.quiz-question-card:hover {
+  transform: translateY(-2px) scale(1.01) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Option Cards with Smooth Interactions */
+[class*="optionCard"] {
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden;
+}
+
+[class*="optionCard"]:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(79, 70, 229, 0.1), rgba(99, 102, 241, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[class*="optionCard"]:hover:before {
+  opacity: 1;
+}
+
+[class*="optionCard"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.15) !important;
+  border-color: #6366F1 !important;
+}
+
+[class*="optionCardSelected"] {
+  animation: selectedPulse 0.6s ease-out;
+  transform: scale(1.02) !important;
+}
+
+[class*="optionCardSelected"]:hover {
+  transform: translateY(-1px) scale(1.02) !important;
+}
+
+/* Selected Option Animation */
+@keyframes selectedPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0.1);
+  }
+  100% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+  }
+}
+
+/* Progress Bar Animation */
+[class*="progressFill"] {
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: linear-gradient(90deg, #4F46E5, #7C3AED, #EC4899) !important;
+  background-size: 200% 100% !important;
+  animation: progressGradient 3s linear infinite;
+}
+
+@keyframes progressGradient {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Submit Button Animations */
+[class*="submitButtonActive"] {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #4F46E5, #7C3AED) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[class*="submitButtonActive"]:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s;
+}
+
+[class*="submitButtonActive"]:hover:before {
+  left: 100%;
+}
+
+[class*="submitButtonActive"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4) !important;
+}
+
+[class*="submitButtonActive"]:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Loading Animation Enhancement */
+[class*="loadingContainer"] {
+  background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%) !important;
+}
+
+/* Question Number Badge Animation */
+[class*="questionNumber"] {
+  position: relative;
+  background: linear-gradient(135deg, #4F46E5, #7C3AED) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[class*="questionNumber"]:after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #4F46E5, #7C3AED, #EC4899, #EF4444);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Status Icons Animation */
+[data-testid*="checkmark-circle"],
+[data-testid*="radio-button-off"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Back Button Enhancement */
+[class*="backButton"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[class*="backButton"]:hover {
+  background-color: #E5E7EB !important;
+  transform: scale(1.05) !important;
+}
+
+/* Header Enhancement */
+[class*="header"] {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Scrollbar Enhancement for Quiz */
+.quiz-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.quiz-scroll-container::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 3px;
+}
+
+.quiz-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4F46E5, #7C3AED);
+  border-radius: 3px;
+}
+
+.quiz-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #3730A3, #6D28D9);
+}
+
+/* Card Entrance Animation */
+@keyframes cardSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+[class*="questionCard"] {
+  animation: cardSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: calc(var(--card-index, 0) * 0.1s);
+}
+
+/* Option Circle Animation */
+[class*="optionCircle"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+[class*="optionCircleSelected"] {
+  animation: circleCheck 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes circleCheck {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Disabled Button State */
+[class*="submitButtonDisabled"] {
+  position: relative;
+  background: #9CA3AF !important;
+  transition: all 0.3s ease !important;
+  cursor: not-allowed !important;
+}
+
+[class*="submitButtonDisabled"]:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  [class*="optionCard"]:hover {
+    transform: none !important;
+  }
+  
+  [class*="questionCard"]:hover {
+    transform: none !important;
+  }
+  
+  [class*="submitButtonActive"]:hover {
+    transform: translateY(-1px) !important;
+  }
+}
+
+/* High Performance Animations */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus States for Accessibility */
+[class*="optionCard"]:focus,
+[class*="submitButton"]:focus,
+[class*="backButton"]:focus {
+  outline: 2px solid #4F46E5 !important;
+  outline-offset: 2px !important;
+}
+
+/* Glass Effect for Modern Look */
+[class*="questionCard"] {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient Text for Title */
+[class*="title"] {
+  background: linear-gradient(135deg, #1F2937 0%, #4F46E5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Floating Animation for Submit Button */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+[class*="submitButtonActive"] {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Ripple Effect for Touch Interactions */
+[class*="optionCard"]:active:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.3);
+  transform: translate(-50%, -50%);
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+  }
+}

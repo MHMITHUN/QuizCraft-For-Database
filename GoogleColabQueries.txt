@@ -1,0 +1,319 @@
+!pip install pymongo
+
+
+
+
+from pymongo import MongoClient
+
+# Example URI — replace with your actual credentials
+uri = "mongodb+srv://sumya:sumya1234@queryshowcluster.9ztpgjy.mongodb.net/?appName=QueryShowCluster"
+client = MongoClient(uri)
+
+# Create / access database
+db = client["quizcraft"]
+print("✅ Connected to MongoDB Atlas and using database:", db.name)
+
+
+
+
+
+
+from datetime import datetime
+from bson import ObjectId
+
+# ===============================================================
+# USERS
+# ===============================================================
+db.users.create_index("email", unique=True)
+db.users.create_index("role")
+db.users.create_index("subscription.plan")
+db.users.create_index("isActive")
+db.users.create_index([("createdAt", -1)])   # fixed
+db.users.create_index("emailVerificationToken")
+db.users.create_index("passwordResetToken")
+
+db.users.insert_one({
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "hashedpassword",
+    "role": "student",
+    "subscription": {"plan": "free", "isActive": True},
+    "createdAt": datetime.utcnow(),
+})
+
+# ===============================================================
+# QUIZZES
+# ===============================================================
+db.quizzes.create_index([("creator", 1), ("createdAt", -1)])
+db.quizzes.create_index("tags")
+db.quizzes.create_index("category")
+db.quizzes.create_index("isPublic")
+db.quizzes.create_index("classCode")
+db.quizzes.create_index("status")
+
+db.quizzes.insert_one({
+    "title": "Python Basics",
+    "creator": ObjectId(),
+    "questions": [
+        {"questionText": "What is Python?", "options": [{"text": "Language", "isCorrect": True}]}
+    ],
+    "category": "Programming",
+    "tags": ["python", "basics"],
+    "isPublic": True,
+    "createdAt": datetime.utcnow()
+})
+
+# ===============================================================
+# QUESTIONS
+# ===============================================================
+db.questions.create_index("quizId")
+db.questions.insert_one({
+    "quizId": ObjectId(),
+    "questionText": "What is 2+2?",
+    "type": "mcq",
+    "correctAnswer": "4"
+})
+
+# ===============================================================
+# ANSWERS
+# ===============================================================
+db.answers.create_index("questionId")
+db.answers.insert_one({
+    "questionId": ObjectId(),
+    "text": "4",
+    "isCorrect": True
+})
+
+# ===============================================================
+# CATEGORIES
+# ===============================================================
+db.categories.create_index("slug", unique=True)
+db.categories.create_index("name", unique=True)
+db.categories.create_index("parent")
+db.categories.create_index("isActive")
+
+db.categories.insert_one({
+    "name": "Programming",
+    "slug": "programming",
+    "description": "All coding related quizzes"
+})
+
+# ===============================================================
+# CLASSES
+# ===============================================================
+db.classes.create_index("teacher")
+db.classes.create_index("code", unique=True)
+db.classes.create_index("students")
+
+db.classes.insert_one({
+    "name": "CS101",
+    "code": "ABC123",
+    "teacher": ObjectId(),
+    "students": [],
+    "subject": "Computer Science",
+    "isActive": True
+})
+
+# ===============================================================
+# FEEDBACK
+# ===============================================================
+db.feedback.create_index([("user", 1), ("createdAt", -1)])
+db.feedback.create_index("quiz")
+db.feedback.create_index("type")
+
+db.feedback.insert_one({
+    "user": ObjectId(),
+    "quiz": ObjectId(),
+    "rating": 5,
+    "comment": "Great quiz!",
+    "type": "quiz"
+})
+
+# ===============================================================
+# FILES
+# ===============================================================
+db.files.create_index([("uploadedBy", 1), ("createdAt", -1)])
+db.files.insert_one({
+    "filename": "test.pdf",
+    "mimetype": "application/pdf",
+    "size": 1024,
+    "uploadedBy": ObjectId()
+})
+
+# ===============================================================
+# NOTIFICATIONS
+# ===============================================================
+db.notifications.create_index([("user", 1), ("isRead", 1), ("createdAt", -1)])
+db.notifications.create_index([("createdAt", -1)])
+db.notifications.create_index("type")
+
+db.notifications.insert_one({
+    "user": ObjectId(),
+    "type": "system",
+    "title": "Welcome!",
+    "message": "Thanks for joining QuizCraft"
+})
+
+# ===============================================================
+# PAYMENTS
+# ===============================================================
+db.payments.create_index([("user", 1), ("createdAt", -1)])
+db.payments.create_index("status")
+db.payments.create_index("transactionId")
+
+db.payments.insert_one({
+    "user": ObjectId(),
+    "amount": 9.99,
+    "status": "succeeded",
+    "provider": "stripe"
+})
+
+# ===============================================================
+# QUIZHISTORIES (Legacy)
+# ===============================================================
+db.quizhistories.create_index([("user", 1), ("createdAt", -1)])
+db.quizhistories.create_index("quiz")
+
+db.quizhistories.insert_one({
+    "user": ObjectId(),
+    "quiz": ObjectId(),
+    "score": 80,
+    "percentage": 80,
+    "passed": True
+})
+
+# ===============================================================
+# QUIZEMBEDDINGS
+# ===============================================================
+db.quizembeddings.create_index("quiz", unique=True)
+db.quizembeddings.create_index("quizId")
+
+db.quizembeddings.insert_one({
+    "quiz": ObjectId(),
+    "embedding": [0.1, 0.2, 0.3],
+    "text": "Sample embedding"
+})
+
+# ===============================================================
+# SUBSCRIPTIONS
+# ===============================================================
+db.subscriptions.create_index([("user", 1), ("status", 1)])
+db.subscriptions.create_index("endDate")
+db.subscriptions.create_index("plan")
+
+db.subscriptions.insert_one({
+    "user": ObjectId(),
+    "plan": "premium",
+    "status": "active",
+    "startDate": datetime.utcnow(),
+    "endDate": datetime.utcnow()
+})
+
+# ===============================================================
+# SYSTEM SETTINGS
+# ===============================================================
+db.systemSettings.insert_one({
+    "freemium": {"freeQuizLimit": 10, "premiumQuizLimit": 1000},
+    "ai": {"quizModel": "gemini-1.5-pro", "embeddingModel": "gemini-embedding-001"},
+    "vector": {"collection": "quizembeddings", "index": "quizembeddings_vector_index", "similarity": "cosine", "dimensions": 768},
+    "createdAt": datetime.utcnow(),
+    "updatedAt": datetime.utcnow()
+})
+
+# ===============================================================
+# TAGS
+# ===============================================================
+db.tags.create_index([("name", "text")])
+db.tags.create_index("name", unique=True)
+db.tags.create_index([("usageCount", -1)])
+
+db.tags.insert_one({
+    "name": "python",
+    "usageCount": 1
+})
+
+# ===============================================================
+# QUIZATTEMPTS
+# ===============================================================
+db.quizattempts.create_index([("quiz", 1), ("user", 1), ("createdAt", -1)])
+db.quizattempts.create_index([("user", 1), ("completedAt", -1)])
+db.quizattempts.create_index([("quiz", 1), ("score", -1)])
+db.quizattempts.create_index("status")
+
+db.quizattempts.insert_one({
+    "quiz": ObjectId(),
+    "user": ObjectId(),
+    "score": 90,
+    "status": "completed",
+    "startedAt": datetime.utcnow(),
+    "completedAt": datetime.utcnow()
+})
+
+# ===============================================================
+# ACHIEVEMENTS
+# ===============================================================
+db.achievements.create_index("name", unique=True)
+db.achievements.create_index("type")
+db.achievements.create_index("isActive")
+
+db.achievements.insert_one({
+    "name": "Quiz Starter",
+    "description": "Completed first quiz",
+    "type": "quiz_count",
+    "points": 10
+})
+
+# ===============================================================
+# USERACHIEVEMENTS
+# ===============================================================
+db.userachievements.create_index([("user", 1), ("achievement", 1)], unique=True)
+db.userachievements.create_index([("user", 1), ("unlockedAt", -1)])
+
+db.userachievements.insert_one({
+    "user": ObjectId(),
+    "achievement": ObjectId(),
+    "unlockedAt": datetime.utcnow()
+})
+
+# ===============================================================
+# ACTIVITYLOGS
+# ===============================================================
+db.activitylogs.create_index([("user", 1), ("createdAt", -1)])
+db.activitylogs.create_index("action")
+db.activitylogs.create_index([("entityType", 1), ("entityId", 1)])
+db.activitylogs.create_index([("createdAt", -1)])
+db.activitylogs.create_index([("createdAt", 1)], expireAfterSeconds=7776000)
+
+db.activitylogs.insert_one({
+    "user": ObjectId(),
+    "action": "login",
+    "description": "User logged in",
+    "createdAt": datetime.utcnow()
+})
+
+# ===============================================================
+# COMMENTS
+# ===============================================================
+db.comments.create_index([("quiz", 1), ("createdAt", -1)])
+db.comments.create_index("user")
+db.comments.create_index("parent")
+
+db.comments.insert_one({
+    "quiz": ObjectId(),
+    "user": ObjectId(),
+    "text": "Awesome quiz!",
+    "rating": 5
+})
+
+print("✅ All collections created and dummy data inserted successfully!")
+
+
+
+
+
+
+
+
+
+for coll in db.list_collection_names():
+    print(f"📦 {coll}: {db[coll].count_documents({})} docs")

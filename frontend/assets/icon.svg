@@ -1,0 +1,48 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dx="0" dy="10" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="225" fill="url(#bg-gradient)"/>
+  
+  <!-- Main Book Icon -->
+  <g filter="url(#shadow)">
+    <!-- Book Base -->
+    <rect x="312" y="256" width="400" height="512" rx="24" fill="white" opacity="0.95"/>
+    
+    <!-- Book Pages -->
+    <rect x="332" y="276" width="360" height="20" fill="#667eea" opacity="0.3" rx="4"/>
+    <rect x="332" y="316" width="360" height="20" fill="#667eea" opacity="0.3" rx="4"/>
+    <rect x="332" y="356" width="360" height="20" fill="#667eea" opacity="0.3" rx="4"/>
+    <rect x="332" y="396" width="280" height="20" fill="#667eea" opacity="0.3" rx="4"/>
+    
+    <!-- Checkmark Circle (AI/Quiz Symbol) -->
+    <circle cx="512" cy="540" r="120" fill="#667eea"/>
+    <path d="M 462 540 L 492 570 L 572 490" stroke="white" stroke-width="24" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Sparkle/AI Effect Top Right -->
+    <circle cx="680" cy="300" r="16" fill="white" opacity="0.9"/>
+    <circle cx="720" cy="340" r="12" fill="white" opacity="0.7"/>
+    <circle cx="660" cy="360" r="10" fill="white" opacity="0.8"/>
+    
+    <!-- Sparkle/AI Effect Bottom Left -->
+    <circle cx="360" cy="680" r="14" fill="white" opacity="0.9"/>
+    <circle cx="320" cy="720" r="10" fill="white" opacity="0.7"/>
+  </g>
+</svg>

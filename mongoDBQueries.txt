@@ -1,0 +1,872 @@
+================================================================================
+QUIZCRAFT - MONGODB DATABASE CREATION QUERIES
+================================================================================
+This file contains all the MongoDB collection creation queries for the QuizCraft application.
+You can use these queries to create a new database with the same structure.
+
+Note: MongoDB creates collections automatically when you insert data, but these queries
+define the schema structure and indexes for optimal performance.
+
+================================================================================
+1. USERS COLLECTION
+================================================================================
+db.createCollection("users");
+
+// Create indexes for users collection
+db.users.createIndex({ "email": 1 }, { unique: true });
+db.users.createIndex({ "role": 1 });
+db.users.createIndex({ "subscription.plan": 1 });
+db.users.createIndex({ "isActive": 1 });
+db.users.createIndex({ "createdAt": -1 });
+db.users.createIndex({ "emailVerificationToken": 1 });
+db.users.createIndex({ "passwordResetToken": 1 });
+
+// Users schema structure:
+/*
+{
+  name: String (required, max 50 chars),
+  email: String (required, unique, lowercase),
+  isEmailVerified: Boolean (default: false),
+  emailVerifiedAt: Date,
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
+  emailVerificationSentAt: Date,
+  emailVerificationCode: String,
+  emailVerificationCodeExpires: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  passwordResetCode: String,
+  passwordResetCodeExpires: Date,
+  adminLoginCode: String,
+  adminLoginCodeExpires: Date,
+  password: String (required, hashed, min 6 chars),
+  role: String (enum: ['guest', 'student', 'teacher', 'admin'], default: 'student'),
+  guestTrialExpiresAt: Date,
+  subscription: {
+    plan: String (enum: ['free', 'premium', 'institutional'], default: 'free'),
+    startDate: Date,
+    endDate: Date,
+    isActive: Boolean (default: false)
+  },
+  usage: {
+    quizzesGenerated: Number (default: 0),
+    quizzesTaken: Number (default: 0),
+    lastQuizDate: Date
+  },
+  preferences: {
+    language: String (enum: ['en', 'bn'], default: 'en'),
+    defaultQuizType: String (enum: ['mcq', 'true-false', 'short-answer'], default: 'mcq')
+  },
+  teacherInfo: {
+    institution: String,
+    subject: String,
+    students: [ObjectId (ref: User)],
+    classes: [{
+      name: String,
+      code: String,
+      students: [ObjectId (ref: User)]
+    }]
+  },
+  points: Number (default: 0),
+  avatar: String,
+  phone: String,
+  bio: String,
+  address: {
+    line1: String,
+    line2: String,
+    city: String,
+    state: String,
+    postalCode: String,
+    country: String
+  },
+  isActive: Boolean (default: true),
+  lastLogin: Date,
+  createdAt: Date (default: Date.now),
+  timestamps: true
+}
+*/
+
+================================================================================
+2. QUIZZES COLLECTION
+================================================================================
+db.createCollection("quizzes");
+
+// Create indexes for quizzes collection
+db.quizzes.createIndex({ "creator": 1, "createdAt": -1 });
+db.quizzes.createIndex({ "tags": 1 });
+db.quizzes.createIndex({ "category": 1 });
+db.quizzes.createIndex({ "isPublic": 1 });
+db.quizzes.createIndex({ "classCode": 1 });
+db.quizzes.createIndex({ "status": 1 });
+
+// Quizzes schema structure:
+/*
+{
+  title: String (required, max 200 chars),
+  description: String (max 1000 chars),
+  creator: ObjectId (ref: User, required),
+  questions: [{
+    questionText: String (required),
+    type: String (enum: ['mcq', 'true-false', 'short-answer'], default: 'mcq'),
+    options: [{
+      text: String,
+      isCorrect: Boolean
+    }],
+    correctAnswer: String,
+    explanation: String,
+    points: Number (default: 1),
+    difficulty: String (enum: ['easy', 'medium', 'hard'], default: 'medium')
+  }],
+  category: String,
+  tags: [String],
+  language: String (enum: ['en', 'bn'], default: 'en'),
+  difficulty: String (enum: ['easy', 'medium', 'hard', 'mixed'], default: 'mixed'),
+  timeLimit: Number (default: 30, in minutes),
+  passingScore: Number (default: 60, percentage),
+  isPublic: Boolean (default: false),
+  sharedWith: [{
+    user: ObjectId (ref: User),
+    role: String (enum: ['view', 'edit'])
+  }],
+  classCode: String,
+  sourceContent: {
+    text: String,
+    filename: String,
+    fileType: String
+  },
+  analytics: {
+    totalAttempts: Number (default: 0),
+    averageScore: Number (default: 0),
+    completionRate: Number (default: 0)
+  },
+  embedding: [Number],
+  embeddingId: String,
+  status: String (enum: ['draft', 'published', 'archived'], default: 'published'),
+  viewCount: Number (default: 0),
+  timestamps: true
+}
+*/
+
+================================================================================
+3. QUESTIONS COLLECTION
+================================================================================
+db.createCollection("questions");
+
+// Create indexes for questions collection
+db.questions.createIndex({ "quizId": 1 });
+
+// Questions schema structure:
+/*
+{
+  quizId: ObjectId (ref: Quiz),
+  questionText: String (required),
+  type: String (enum: ['mcq', 'true-false', 'short-answer'], default: 'mcq'),
+  correctAnswer: String,
+  explanation: String,
+  difficulty: String (enum: ['easy', 'medium', 'hard'], default: 'medium'),
+  points: Number (default: 1),
+  timestamps: true
+}
+*/
+
+================================================================================
+4. ANSWERS COLLECTION
+================================================================================
+db.createCollection("answers");
+
+// Create indexes for answers collection
+db.answers.createIndex({ "questionId": 1 });
+
+// Answers schema structure:
+/*
+{
+  questionId: ObjectId (ref: QuestionDoc),
+  text: String (required),
+  isCorrect: Boolean (default: false),
+  timestamps: true
+}
+*/
+
+================================================================================
+5. CATEGORIES COLLECTION
+================================================================================
+db.createCollection("categories");
+
+// Create indexes for categories collection
+db.categories.createIndex({ "slug": 1 }, { unique: true });
+db.categories.createIndex({ "name": 1 }, { unique: true });
+db.categories.createIndex({ "parent": 1 });
+db.categories.createIndex({ "isActive": 1 });
+
+// Categories schema structure:
+/*
+{
+  name: String (required, unique, trimmed),
+  slug: String (required, unique, lowercase),
+  description: String (max 500 chars),
+  icon: String,
+  color: String,
+  parent: ObjectId (ref: Category, default: null),
+  quizCount: Number (default: 0),
+  isActive: Boolean (default: true),
+  order: Number (default: 0),
+  timestamps: true
+}
+*/
+
+================================================================================
+6. CLASSES COLLECTION
+================================================================================
+db.createCollection("classes");
+
+// Create indexes for classes collection
+db.classes.createIndex({ "teacher": 1 });
+db.classes.createIndex({ "code": 1 }, { unique: true });
+db.classes.createIndex({ "students": 1 });
+
+// Classes schema structure:
+/*
+{
+  name: String (required, trimmed),
+  code: String (required, unique, uppercase, 6 chars),
+  description: String,
+  teacher: ObjectId (ref: User, required),
+  students: [ObjectId (ref: User)],
+  quizzes: [ObjectId (ref: Quiz)],
+  posts: [{
+    author: ObjectId (ref: User),
+    message: String,
+    createdAt: Date (default: Date.now)
+  }],
+  subject: String,
+  grade: String,
+  institution: String,
+  schedule: {
+    days: [String],
+    time: String
+  },
+  isActive: Boolean (default: true),
+  maxStudents: Number (default: 50),
+  settings: {
+    allowStudentDiscussions: Boolean (default: true),
+    autoGrading: Boolean (default: true),
+    showLeaderboard: Boolean (default: true)
+  },
+  timestamps: true
+}
+*/
+
+================================================================================
+7. FEEDBACK COLLECTION
+================================================================================
+db.createCollection("feedback");
+
+// Create indexes for feedback collection
+db.feedback.createIndex({ "user": 1, "createdAt": -1 });
+db.feedback.createIndex({ "quiz": 1 });
+db.feedback.createIndex({ "type": 1 });
+
+// Feedback schema structure:
+/*
+{
+  user: ObjectId (ref: User, required),
+  quiz: ObjectId (ref: Quiz),
+  rating: Number (min: 1, max: 5),
+  comment: String (max 1000 chars),
+  type: String (enum: ['app', 'quiz', 'bug', 'feature'], default: 'app'),
+  timestamps: true
+}
+*/
+
+================================================================================
+8. FILES COLLECTION
+================================================================================
+db.createCollection("files");
+
+// Create indexes for files collection
+db.files.createIndex({ "uploadedBy": 1, "createdAt": -1 });
+
+// Files schema structure:
+/*
+{
+  filename: String,
+  originalname: String,
+  mimetype: String,
+  size: Number,
+  path: String,
+  uploadedBy: ObjectId (ref: User),
+  timestamps: true
+}
+*/
+
+================================================================================
+9. NOTIFICATIONS COLLECTION
+================================================================================
+db.createCollection("notifications");
+
+// Create indexes for notifications collection
+db.notifications.createIndex({ "user": 1, "isRead": 1, "createdAt": -1 });
+db.notifications.createIndex({ "createdAt": -1 });
+db.notifications.createIndex({ "type": 1 });
+
+// Notifications schema structure:
+/*
+{
+  user: ObjectId (ref: User, required),
+  type: String (enum: ['quiz_shared', 'comment', 'achievement', 'leaderboard', 'system', 'quiz_attempt', 'subscription'], required),
+  title: String (required),
+  message: String (required),
+  data: {
+    quizId: ObjectId,
+    attemptId: ObjectId,
+    userId: ObjectId,
+    url: String
+  },
+  isRead: Boolean (default: false),
+  readAt: Date,
+  priority: String (enum: ['low', 'medium', 'high'], default: 'medium'),
+  timestamps: true
+}
+*/
+
+================================================================================
+10. PAYMENTS COLLECTION
+================================================================================
+db.createCollection("payments");
+
+// Create indexes for payments collection
+db.payments.createIndex({ "user": 1, "createdAt": -1 });
+db.payments.createIndex({ "status": 1 });
+db.payments.createIndex({ "transactionId": 1 });
+
+// Payments schema structure:
+/*
+{
+  user: ObjectId (ref: User, required),
+  amount: Number (required),
+  currency: String (default: 'USD'),
+  provider: String (enum: ['stripe', 'paypal', 'manual', 'other'], default: 'manual'),
+  status: String (enum: ['pending', 'succeeded', 'failed', 'refunded'], default: 'pending'),
+  subscriptionPlan: String (enum: ['free', 'premium', 'institutional']),
+  transactionId: String,
+  meta: Object,
+  timestamps: true
+}
+*/
+
+================================================================================
+11. QUIZHISTORIES COLLECTION (Legacy)
+================================================================================
+db.createCollection("quizhistories");
+
+// Create indexes for quizhistories collection
+db.quizhistories.createIndex({ "user": 1, "createdAt": -1 });
+db.quizhistories.createIndex({ "quiz": 1 });
+
+// QuizHistories (Legacy) schema structure:
+/*
+{
+  user: ObjectId (ref: User),
+  quiz: ObjectId (ref: Quiz),
+  answers: [{
+    questionId: ObjectId,
+    userAnswer: String,
+    isCorrect: Boolean,
+    pointsEarned: Number,
+    timeTaken: Number
+  }],
+  score: Number,
+  percentage: Number,
+  totalQuestions: Number,
+  correctAnswers: Number,
+  incorrectAnswers: Number,
+  skippedQuestions: Number (default: 0),
+  timeTaken: Number,
+  passed: Boolean,
+  attemptNumber: Number (default: 1),
+  feedback: {
+    strengths: [String],
+    weaknesses: [String],
+    recommendations: [String]
+  },
+  completedAt: Date (default: Date.now),
+  timestamps: true
+}
+*/
+
+================================================================================
+12. QUIZEMBEDDINGS COLLECTION
+================================================================================
+db.createCollection("quizembeddings");
+
+// Create indexes for quizembeddings collection
+db.quizembeddings.createIndex({ "quiz": 1 }, { unique: true });
+db.quizembeddings.createIndex({ "quizId": 1 });
+
+// Note: For vector search, you need to create a vector search index in MongoDB Atlas:
+/*
+{
+  "mappings": {
+    "dynamic": true,
+    "fields": {
+      "embedding": {
+        "type": "knnVector",
+        "dimensions": 768,
+        "similarity": "cosine"
+      }
+    }
+  }
+}
+*/
+
+// QuizEmbeddings schema structure:
+/*
+{
+  quiz: ObjectId (ref: Quiz, required, unique),
+  embedding: [Number] (required),
+  text: String (required),
+  metadata: {
+    category: String,
+    tags: [String],
+    difficulty: String,
+    language: String,
+    questionCount: Number
+  },
+  lastUpdated: Date (default: Date.now),
+  timestamps: true
+}
+*/
+
+// QuizEmbeddingChunk schema structure (also uses quizembeddings collection):
+/*
+{
+  quizId: ObjectId (ref: Quiz),
+  chunkId: String,
+  text: String (required),
+  topic: String,
+  difficulty: String (enum: ['easy', 'medium', 'hard', 'mixed'], default: 'medium'),
+  embedding: [Number] (required),
+  createdAt: Date (default: Date.now),
+  timestamps: true
+}
+*/
+
+================================================================================
+13. QUIZHISTORY COLLECTION (Primary)
+================================================================================
+db.createCollection("quizhistories");
+
+// Create indexes for primary quizhistory collection
+db.quizhistories.createIndex({ "user": 1, "createdAt": -1 });
+db.quizhistories.createIndex({ "quiz": 1 });
+db.quizhistories.createIndex({ "score": -1 });
+
+// QuizHistory schema structure:
+/*
+{
+  user: ObjectId (ref: User, required),
+  quiz: ObjectId (ref: Quiz, required),
+  answers: [{
+    questionId: ObjectId,
+    userAnswer: String,
+    isCorrect: Boolean,
+    pointsEarned: Number,
+    timeTaken: Number (in seconds)
+  }],
+  score: Number (required),
+  percentage: Number (required),
+  totalQuestions: Number (required),
+  correctAnswers: Number (required),
+  incorrectAnswers: Number (required),
+  skippedQuestions: Number (default: 0),
+  timeTaken: Number (required, in seconds),
+  passed: Boolean (required),
+  attemptNumber: Number (default: 1),
+  feedback: {
+    strengths: [String],
+    weaknesses: [String],
+    recommendations: [String]
+  },
+  completedAt: Date (default: Date.now),
+  timestamps: true
+}
+*/
+
+================================================================================
+14. SUBSCRIPTIONS COLLECTION
+================================================================================
+db.createCollection("subscriptions");
+
+// Create indexes for subscriptions collection
+db.subscriptions.createIndex({ "user": 1, "status": 1 });
+db.subscriptions.createIndex({ "endDate": 1 });
+db.subscriptions.createIndex({ "plan": 1 });
+
+// Subscriptions schema structure:
+/*
+{
+  user: ObjectId (ref: User, required),
+  plan: String (enum: ['free', 'premium', 'institutional'], required),
+  status: String (enum: ['active', 'cancelled', 'expired', 'paused'], default: 'active'),
+  startDate: Date (required, default: Date.now),
+  endDate: Date (required),
+  autoRenew: Boolean (default: true),
+  paymentMethod: String (enum: ['credit_card', 'paypal', 'bank_transfer', 'free']),
+  amount: Number (default: 0),
+  currency: String (default: 'USD'),
+  transactionId: String,
+  features: {
+    quizLimit: Number,
+    aiGenerations: Number,
+    storageLimit: Number (in MB),
+    prioritySupport: Boolean,
+    customBranding: Boolean
+  },
+  billingCycle: String (enum: ['monthly', 'yearly', 'lifetime'], default: 'monthly'),
+  timestamps: true
+}
+*/
+
+================================================================================
+15. SYSTEMSETTINGS COLLECTION
+================================================================================
+db.createCollection("systemSettings");
+
+// SystemSettings schema structure:
+/*
+{
+  freemium: {
+    freeQuizLimit: Number (default: 10),
+    premiumQuizLimit: Number (default: 1000)
+  },
+  ai: {
+    quizModel: String (default: 'gemini-1.5-pro'),
+    embeddingModel: String (default: 'gemini-embedding-001')
+  },
+  vector: {
+    collection: String (default: 'quizembeddings'),
+    index: String (default: 'quizembeddings_vector_index'),
+    similarity: String (default: 'cosine'),
+    dimensions: Number (default: 768)
+  },
+  timestamps: true
+}
+*/
+
+// Insert default system settings
+db.systemSettings.insertOne({
+  freemium: {
+    freeQuizLimit: 10,
+    premiumQuizLimit: 1000
+  },
+  ai: {
+    quizModel: 'gemini-1.5-pro',
+    embeddingModel: 'gemini-embedding-001'
+  },
+  vector: {
+    collection: 'quizembeddings',
+    index: 'quizembeddings_vector_index',
+    similarity: 'cosine',
+    dimensions: 768
+  },
+  createdAt: new Date(),
+  updatedAt: new Date()
+});
+
+================================================================================
+16. TAGS COLLECTION
+================================================================================
+db.createCollection("tags");
+
+// Create indexes for tags collection
+db.tags.createIndex({ "name": "text" });
+db.tags.createIndex({ "name": 1 }, { unique: true });
+db.tags.createIndex({ "usageCount": -1 });
+
+// Tags schema structure:
+/*
+{
+  name: String (required, unique, trimmed, lowercase),
+  usageCount: Number (default: 0),
+  category: ObjectId (ref: Category),
+  relatedTags: [ObjectId (ref: Tag)],
+  timestamps: true
+}
+*/
+
+================================================================================
+17. ANALYTICS COLLECTION (QuizAttempts)
+================================================================================
+db.createCollection("quizattempts");
+
+// Create indexes for quizattempts collection
+db.quizattempts.createIndex({ "quiz": 1, "user": 1, "createdAt": -1 });
+db.quizattempts.createIndex({ "user": 1, "completedAt": -1 });
+db.quizattempts.createIndex({ "quiz": 1, "score": -1 });
+db.quizattempts.createIndex({ "status": 1 });
+
+// QuizAttempts schema structure:
+/*
+{
+  quiz: ObjectId (ref: Quiz, required),
+  user: ObjectId (ref: User, required),
+  answers: [{
+    questionId: ObjectId,
+    questionText: String,
+    userAnswer: String,
+    correctAnswer: String,
+    isCorrect: Boolean,
+    points: Number,
+    timeTaken: Number (seconds)
+  }],
+  score: Number (required, min: 0, max: 100),
+  totalPoints: Number,
+  earnedPoints: Number,
+  timeTaken: Number (required, in seconds),
+  status: String (enum: ['in-progress', 'completed', 'abandoned'], default: 'in-progress'),
+  startedAt: Date (default: Date.now),
+  completedAt: Date,
+  isPassed: Boolean,
+  rank: Number,
+  deviceInfo: {
+    platform: String,
+    userAgent: String
+  },
+  proctoring: {
+    enabled: Boolean (default: false),
+    violations: [{
+      type: String (enum: ['APP_SWITCH', 'TAB_SWITCH', 'WINDOW_BLUR', 'COPY_ATTEMPT', 'PASTE_ATTEMPT', 'RIGHT_CLICK', 'OTHER']),
+      timestamp: Date,
+      timeFromStart: Number (seconds),
+      platform: String,
+      description: String,
+      details: Mixed
+    }],
+    violationCount: Number (default: 0),
+    maxViolationsReached: Boolean (default: false),
+    flaggedForReview: Boolean (default: false),
+    autoSubmitted: Boolean (default: false)
+  },
+  timestamps: true
+}
+*/
+
+================================================================================
+18. LEADERBOARDS COLLECTION (Computed from QuizHistory)
+================================================================================
+// Note: Leaderboards are typically computed dynamically from QuizHistory collection
+// using aggregation pipelines. No separate collection needed, but you can create
+// a materialized view or cached collection if needed for performance.
+
+// To get leaderboard data, use:
+db.quizhistories.aggregate([
+  {
+    $group: {
+      _id: "$user",
+      totalPoints: { $sum: "$score" },
+      quizzesTaken: { $sum: 1 },
+      averageScore: { $avg: "$percentage" }
+    }
+  },
+  { $sort: { totalPoints: -1 } },
+  { $limit: 10 },
+  {
+    $lookup: {
+      from: "users",
+      localField: "_id",
+      foreignField: "_id",
+      as: "userInfo"
+    }
+  },
+  { $unwind: "$userInfo" },
+  {
+    $project: {
+      userId: "$_id",
+      name: "$userInfo.name",
+      email: "$userInfo.email",
+      avatar: "$userInfo.avatar",
+      totalPoints: 1,
+      quizzesTaken: 1,
+      averageScore: 1
+    }
+  }
+]);
+
+================================================================================
+ADDITIONAL COLLECTIONS (Extended Features)
+================================================================================
+
+19. ACHIEVEMENTS COLLECTION
+--------------------------------------------------------------------------------
+db.createCollection("achievements");
+
+// Create indexes
+db.achievements.createIndex({ "name": 1 }, { unique: true });
+db.achievements.createIndex({ "type": 1 });
+db.achievements.createIndex({ "isActive": 1 });
+
+// Achievements schema:
+/*
+{
+  name: String (required, unique),
+  description: String (required),
+  icon: String,
+  type: String (enum: ['quiz_count', 'score', 'streak', 'speed', 'category_master', 'social'], required),
+  criteria: {
+    count: Number,
+    score: Number,
+    category: String,
+    timeLimit: Number
+  },
+  points: Number (default: 10),
+  rarity: String (enum: ['common', 'rare', 'epic', 'legendary'], default: 'common'),
+  isActive: Boolean (default: true),
+  timestamps: true
+}
+*/
+
+20. USERACHIEVEMENTS COLLECTION
+--------------------------------------------------------------------------------
+db.createCollection("userachievements");
+
+// Create indexes
+db.userachievements.createIndex({ "user": 1, "achievement": 1 }, { unique: true });
+db.userachievements.createIndex({ "user": 1, "unlockedAt": -1 });
+
+// UserAchievements schema:
+/*
+{
+  user: ObjectId (ref: User, required),
+  achievement: ObjectId (ref: Achievement, required),
+  unlockedAt: Date (default: Date.now),
+  progress: Number (default: 0),
+  timestamps: true
+}
+*/
+
+21. ACTIVITYLOGS COLLECTION
+--------------------------------------------------------------------------------
+db.createCollection("activitylogs");
+
+// Create indexes
+db.activitylogs.createIndex({ "user": 1, "createdAt": -1 });
+db.activitylogs.createIndex({ "action": 1 });
+db.activitylogs.createIndex({ "entityType": 1, "entityId": 1 });
+db.activitylogs.createIndex({ "createdAt": -1 });
+// TTL index to auto-delete after 90 days
+db.activitylogs.createIndex({ "createdAt": 1 }, { expireAfterSeconds: 7776000 });
+
+// ActivityLogs schema:
+/*
+{
+  user: ObjectId (ref: User, required),
+  action: String (required, enum: ['login', 'logout', 'register', 'quiz_created', 'quiz_updated', 'quiz_deleted', 'quiz_taken', 'quiz_shared', 'profile_updated', 'subscription_changed', 'file_uploaded', 'comment_posted', 'achievement_unlocked']),
+  description: String,
+  entityType: String (enum: ['User', 'Quiz', 'QuizAttempt', 'Class', 'Comment', 'Subscription']),
+  entityId: ObjectId,
+  metadata: {
+    ipAddress: String,
+    userAgent: String,
+    platform: String,
+    location: String
+  },
+  status: String (enum: ['success', 'failed', 'pending'], default: 'success'),
+  timestamps: true
+}
+*/
+
+22. COMMENTS COLLECTION
+--------------------------------------------------------------------------------
+db.createCollection("comments");
+
+// Create indexes
+db.comments.createIndex({ "quiz": 1, "createdAt": -1 });
+db.comments.createIndex({ "user": 1 });
+db.comments.createIndex({ "parent": 1 });
+
+// Comments schema:
+/*
+{
+  quiz: ObjectId (ref: Quiz, required),
+  user: ObjectId (ref: User, required),
+  text: String (required, max 1000 chars),
+  rating: Number (min: 1, max: 5),
+  parent: ObjectId (ref: Comment, default: null),
+  likes: [ObjectId (ref: User)],
+  isEdited: Boolean (default: false),
+  isReported: Boolean (default: false),
+  isApproved: Boolean (default: true),
+  timestamps: true
+}
+*/
+
+================================================================================
+SUMMARY OF ALL COLLECTIONS
+================================================================================
+
+Main Collections (18):
+1.  users                  - User accounts and profiles
+2.  quizzes                - Quiz content and metadata
+3.  questions              - Standalone questions
+4.  answers                - Answer options for questions
+5.  categories             - Quiz categories and topics
+6.  classes                - Teacher-student classroom management
+7.  feedback               - User feedback and ratings
+8.  files                  - Uploaded file metadata
+9.  notifications          - User notifications
+10. payments               - Payment transactions
+11. quizhistories          - Quiz attempt history (legacy)
+12. quizembeddings         - Vector embeddings for semantic search
+13. quizhistory            - Primary quiz attempt records
+14. subscriptions          - User subscription plans
+15. systemSettings         - Global system configuration
+16. tags                   - Quiz tags
+17. quizattempts           - Detailed quiz attempt analytics
+18. leaderboards           - Computed from quizhistories (no separate collection)
+
+Extended Collections (5):
+19. achievements           - Achievement definitions
+20. userachievements       - User-unlocked achievements
+21. activitylogs           - User activity tracking
+22. comments               - Quiz comments and discussions
+
+================================================================================
+NOTES AND RECOMMENDATIONS
+================================================================================
+
+1. MongoDB Atlas Vector Search:
+   - For the quizembeddings collection, you must create a vector search index
+   - in MongoDB Atlas with dimensions: 768, similarity: cosine
+   - Index name: quizembeddings_vector_index
+
+2. Indexes:
+   - All indexes listed above should be created for optimal performance
+   - TTL indexes help with automatic cleanup of old data
+
+3. Unique Constraints:
+   - Some fields have unique constraints (email, code, slug, etc.)
+   - These are enforced at the database level
+
+4. References:
+   - ObjectId fields with (ref: Model) indicate relationships
+   - These are not enforced by MongoDB but by application logic
+
+5. Default Values:
+   - Many fields have default values specified in the schema
+   - These are set by the application when creating documents
+
+6. Timestamps:
+   - Most collections have automatic createdAt and updatedAt timestamps
+   - These are managed by Mongoose timestamps option
+
+7. Collection Naming:
+   - Some models explicitly set collection names (e.g., 'quizhistories')
+   - Others use the default pluralized model name
+
+8. Data Migration:
+   - If migrating from an existing database, ensure data types match
+   - Pay attention to enum values and required fields
+
+================================================================================
+END OF MONGODB QUERIES FILE
+================================================================================

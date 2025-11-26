@@ -1,0 +1,49 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="adaptive-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
+      <feOffset dx="0" dy="8" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.25"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Transparent background for adaptive icon -->
+  <rect width="1024" height="1024" fill="transparent"/>
+  
+  <!-- Main Icon centered and slightly larger for adaptive icon -->
+  <g transform="translate(512, 512)">
+    <!-- Book -->
+    <g filter="url(#shadow)">
+      <rect x="-220" y="-280" width="440" height="560" rx="28" fill="white" opacity="0.98"/>
+      
+      <!-- Book Pages -->
+      <rect x="-195" y="-250" width="390" height="22" fill="#667eea" opacity="0.35" rx="4"/>
+      <rect x="-195" y="-205" width="390" height="22" fill="#667eea" opacity="0.35" rx="4"/>
+      <rect x="-195" y="-160" width="390" height="22" fill="#667eea" opacity="0.35" rx="4"/>
+      <rect x="-195" y="-115" width="305" height="22" fill="#667eea" opacity="0.35" rx="4"/>
+      
+      <!-- AI Check Circle -->
+      <circle cx="0" cy="30" r="135" fill="#667eea"/>
+      <path d="M -55 30 L -22 63 L 66 -25" stroke="white" stroke-width="26" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <!-- Sparkle Effects -->
+      <circle cx="185" cy="-235" r="18" fill="white" opacity="0.95"/>
+      <circle cx="230" cy="-190" r="14" fill="white" opacity="0.75"/>
+      <circle cx="165" cy="-165" r="12" fill="white" opacity="0.85"/>
+      
+      <circle cx="-170" cy="185" r="16" fill="white" opacity="0.95"/>
+      <circle cx="-215" cy="230" r="12" fill="white" opacity="0.75"/>
+    </g>
+  </g>
+</svg>

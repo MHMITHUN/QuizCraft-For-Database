@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "QuizCraft",
+    "slug": "quizcraft",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#6366F1"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.quizcraft.app"
+    },
+    "android": {
+      "package": "com.quizcraft.app",
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {},
+    "extra": {
+      "apiUrl": "http://192.168.0.105:5000/api"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "mappings": {
+    "dynamic": true,
+    "fields": {
+      "embedding": {
+        "type": "vector",
+        "dimensions": 768,
+        "similarity": "cosine"
+      }
+    }
+  }
+}
